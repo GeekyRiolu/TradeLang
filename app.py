@@ -7,43 +7,112 @@ from dsl_parser import parse_dsl
 from ast_python import generate_signal_function
 from backtest import simple_backtest
 
-st.set_page_config(page_title="TradeLang Demo", layout="wide")
+st.set_page_config(
+    page_title="TradeLang — Strategy Tester",
+    layout="wide"
+)
 
 st.title("📈 TradeLang — Natural Language Trading Strategy Tester")
 
 st.markdown("""
-Type a trading strategy in **plain English** and see how it gets:
-- Converted into a DSL
-- Parsed into an AST
-- Executed on market data
+TradeLang lets you write trading strategies in **plain English**
+and converts them into **executable trading logic**.
 """)
 
-# -------- Input --------
+with st.expander("ℹ️ How to write a valid strategy", expanded=True):
+    st.markdown("""
+### ✅ Supported sentence patterns
+
+**ENTRY rules**
+- Buy when the close price is above the 20-day moving average
+- Buy when price crosses above the 20-day moving average
+- Buy when volume is above 1M
+- Combine conditions using **and**
+
+**EXIT rules**
+- Exit when RSI(14) is below 50
+- Exit when price crosses below the 20-day moving average
+- Exit when volume is below 900K
+
+### ⚠️ Rules to remember
+- Always include **one Buy rule** and **one Exit rule**
+- Write **one sentence per line**
+- Avoid free-form words like *strong*, *fast*, *significant*
+- Do not use commas inside conditions
+
+### ✅ Recommended example
+Buy when price crosses above the 20-day moving average.
+Exit when price crosses below the 20-day moving average.
+
+pgsql
+Copy code
+""")
+
+examples = {
+    "Select an example": "",
+    "MA Crossover (Best Demo)":
+        "Buy when price crosses above the 20-day moving average.\n"
+        "Exit when price crosses below the 20-day moving average.",
+
+    "Trend + RSI Exit":
+        "Buy when the close price is above the 20-day moving average.\n"
+        "Exit when RSI(14) is below 50.",
+
+    "Volume Breakout":
+        "Buy when the close price is above the 20-day moving average and volume is above 1M.\n"
+        "Exit when RSI(14) is below 60."
+}
+
+selected_example = st.selectbox(
+    "📌 Try a supported example strategy",
+    list(examples.keys())
+)
+
 nl_input = st.text_area(
     "🧠 Natural Language Strategy",
-    value="Buy when the close price is above the 20-day moving average and volume is above 1M. Exit when RSI(14) is below 30.",
-    height=120
+    value=examples[selected_example],
+    height=140,
+    placeholder="Line 1: Buy rule\nLine 2: Exit rule"
 )
 
 run_btn = st.button("🚀 Run Strategy")
 
-# -------- Sample Data --------
 def load_sample_data():
     dates = pd.date_range("2023-01-01", periods=80)
     close = np.linspace(100, 130, len(dates)) + np.random.normal(0, 1, len(dates))
-    df = pd.DataFrame({
-        "close": close,
+    return pd.DataFrame({
         "open": close + np.random.normal(0, 0.5, len(dates)),
         "high": close + 1,
         "low": close - 1,
+        "close": close,
         "volume": np.random.randint(700_000, 1_500_000, len(dates))
     }, index=dates)
-    return df
 
 df = load_sample_data()
 
-# -------- Execution --------
 if run_btn:
+    if not nl_input.strip():
+        st.warning("⚠️ Please enter a strategy or select an example.")
+        st.stop()
+
+    lines = [l.strip() for l in nl_input.splitlines() if l.strip()]
+
+    if len(lines) < 2:
+        st.error("❌ Strategy must contain two lines: Buy rule and Exit rule.")
+        st.stop()
+
+    if not lines[0].lower().startswith("buy"):
+        st.error("❌ First line must start with a BUY rule.")
+        st.stop()
+
+    if not lines[1].lower().startswith("exit"):
+        st.error("❌ Second line must start with an EXIT rule.")
+        st.stop()
+
+    unsupported_words = ["strong", "weak", "significant", "quick", "fast"]
+    if any(word in nl_input.lower() for word in unsupported_words):
+        st.warning("⚠️ Some words may not be supported. Consider simplifying the strategy.")
+
     try:
         dsl = nl_to_dsl(nl_input)
         ast = parse_dsl(dsl)
@@ -63,17 +132,23 @@ if run_btn:
         with col2:
             st.subheader("📈 Signals Preview")
             preview = pd.concat([df, signals], axis=1)
-            st.dataframe(preview.tail(15))
+            st.dataframe(preview.tail(15), use_container_width=True)
 
-            st.subheader("📉 Entry / Exit Count")
+            st.subheader("🔢 Signal Counts")
             st.write({
-                "Entries": int(signals["entry"].sum()),
-                "Exits": int(signals["exit"].sum())
+                "Entry Signals": int(signals["entry"].sum()),
+                "Exit Signals": int(signals["exit"].sum())
             })
 
-    except Exception as e:
-        st.error("❌ Error while executing strategy")
-        st.exception(e)
+            if result["trades"] == 0:
+                st.info(
+                    "ℹ️ No trades were executed because the exit condition "
+                    "was never satisfied on this data."
+                )
+
+    except Exception:
+        st.error("❌ Unable to parse or execute the strategy.")
+        st.info("💡 Tip: Use one of the example strategies above or follow the input rules.")
 
 st.markdown("---")
 st.caption("TradeLang · NL → DSL → AST → Execution")
