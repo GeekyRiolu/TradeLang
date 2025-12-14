@@ -19,7 +19,8 @@ EXIT.2: /EXIT/i
      | comparison
      | cross_expr
 
-comparison: value comp_op value
+comparison: value OP value
+OP: ">"|"<"|">="|"<="|"=="
 
 cross_expr: "CROSS" "(" value "," value ")"
 
@@ -30,8 +31,6 @@ cross_expr: "CROSS" "(" value "," value ")"
 
 indicator: NAME "(" args ")"
 args: value ("," value)*
-
-comp_op: ">"|"<"|">="|"<="|"=="
 
 SHIFT_EXPR: /[a-zA-Z_][a-zA-Z0-9_]*\.shift\(\d+\)/
 
@@ -61,10 +60,13 @@ class ASTTransformer(Transformer):
         return {"type": "and", "left": items[0], "right": items[1]}
 
     def comparison(self, items):
-        return {"type": "cmp", "op": items[1], "left": items[0], "right": items[2]}
-
-    def comp_op(self, items):
-        return items[0]
+        left, op, right = items
+        return {
+            "type": "cmp",
+            "op": op.value,
+            "left": left,
+            "right": right
+        }
 
     def NAME(self, tok):
         return {"type": "name", "value": tok.value}
@@ -73,7 +75,11 @@ class ASTTransformer(Transformer):
         return {"type": "number", "value": float(tok)}
 
     def indicator(self, items):
-        return {"type": "indicator", "name": items[0]["value"], "args": items[1]}
+        return {
+        "type": "indicator",
+        "name": items[0]["value"].lower(),
+        "args": items[1]
+        }
 
     def args(self, items):
         return items
