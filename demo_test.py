@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
-from nl_to_dsl import nl_to_dsl
+from nl_dsl import nl_to_dsl
 from dsl_parser import parse_dsl
-from ast_to_python import generate_signal_function
+from ast_python import generate_signal_function
 from backtest import simple_backtest
 
 dates = pd.date_range("2023-01-01", periods=60)
