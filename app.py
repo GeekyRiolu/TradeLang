@@ -79,8 +79,10 @@ nl_input = st.text_area(
 run_btn = st.button("🚀 Run Strategy")
 
 def load_sample_data():
-    dates = pd.date_range("2023-01-01", periods=80)
-    close = np.linspace(100, 130, len(dates)) + np.random.normal(0, 1, len(dates))
+    dates = pd.date_range("2023-01-01", periods=120)
+    t = np.arange(len(dates))
+    close = 115 + 10 * np.sin(t / 6) + np.random.normal(0, 1, len(dates))
+
     return pd.DataFrame({
         "open": close + np.random.normal(0, 0.5, len(dates)),
         "high": close + 1,
