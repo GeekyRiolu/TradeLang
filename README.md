@@ -27,15 +27,15 @@ This project demonstrates **NLP, language design, parsing, and execution pipelin
 
 ```mermaid
 flowchart TD
-    A[Natural Language Strategy] --> B[NL → DSL Converter]
+    A[Natural Language Strategy] --> B[NL to DSL Converter]
     B --> C[TradeLang DSL]
     C --> D[DSL Parser<br/>(Lark Grammar)]
     D --> E[Abstract Syntax Tree (AST)]
-    E --> F[AST → Python Codegen]
+    E --> F[AST to Python Codegen]
     F --> G[Signal Engine]
     G --> H[Backtesting Engine]
     H --> I[Results & Metrics]
-    G --> J[Entry / Exit Signals]
+    G --> J[Entry Exit Signals]
     J --> K[Price Chart Visualization]
 ```
 
@@ -50,7 +50,7 @@ flowchart TD
     DSL --> Parser[Grammar Parser]
     Parser --> AST[AST Nodes]
     AST --> Code[Executable Python]
-    Code --> Signals[Boolean Entry/Exit Signals]
+    Code --> Signals[Boolean Entry Exit Signals]
     Signals --> Backtest[Trade Simulation]
 ```
 
