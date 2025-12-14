@@ -1,10 +1,10 @@
-from lark import Lark, Transformer, Token
+from lark import Lark, Transformer
 
 GRAMMAR = r"""
-start: section*
+start: _NL* section (_NL+ section)* _NL*
 
-section: ENTRY ":" _NL? expr?
-       | EXIT ":" _NL? expr?
+section: ENTRY ":" _NL* expr?
+       | EXIT ":" _NL* expr?
 
 ENTRY.2: /ENTRY/i
 EXIT.2: /EXIT/i
@@ -46,9 +46,9 @@ _NL: /(\r?\n)+/
 class ASTTransformer(Transformer):
     def start(self, items):
         out = {}
-        for sec in items:
-            k = sec[0].lower()
-            out[k] = sec[1] if len(sec) > 1 else None
+        for item in items:
+            if isinstance(item, list):
+                out[item[0].lower()] = item[1] if len(item) > 1 else None
         return out
 
     def section(self, items):
