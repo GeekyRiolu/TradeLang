@@ -24,29 +24,81 @@ This project demonstrates **NLP, language design, parsing, and execution pipelin
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ High-Level System Architecture
 
-```
-Natural Language
-      ↓
-   NL → DSL
-      ↓
-   DSL Parser
-      ↓
-      AST
-      ↓
- AST → Python
-      ↓
- Signal Engine
-      ↓
- Backtesting
-      ↓
- Visualization
-```
+Add this section under **System Architecture** in your README.
 
-Each stage is **explicit and explainable**, making the system deterministic and debuggable.
+```mermaid
+flowchart TD
+    A[Natural Language Strategy] --> B[NL → DSL Converter]
+    B --> C[TradeLang DSL]
+    C --> D[DSL Parser<br/>(Lark Grammar)]
+    D --> E[Abstract Syntax Tree (AST)]
+    E --> F[AST → Python Codegen]
+    F --> G[Signal Engine]
+    G --> H[Backtesting Engine]
+    H --> I[Results & Metrics]
+    G --> J[Entry / Exit Signals]
+    J --> K[Price Chart Visualization]
+```
 
 ---
+
+## 🧠 Compiler-Style Pipeline (Detailed)
+
+This diagram shows that TradeLang is **not just NLP**, but a **real language system**.
+
+```mermaid
+flowchart LR
+    NL[User Input<br/>Plain English] --> DSL[Domain Specific Language]
+    DSL --> Parser[Grammar Parser]
+    Parser --> AST[AST Nodes]
+    AST --> Code[Executable Python]
+    Code --> Signals[Boolean Entry/Exit Signals]
+    Signals --> Backtest[Trade Simulation]
+```
+
+---
+
+## 🖥️ Streamlit UI Architecture
+
+Add this under a new section: **Streamlit Interface Architecture**
+
+```mermaid
+flowchart TD
+    UI[Streamlit UI] --> NLInput[Strategy Input]
+    UI --> Examples[Predefined Examples]
+
+    NLInput --> NLDSL[NL → DSL]
+    NLDSL --> Parser
+    Parser --> AST
+    AST --> Exec[Signal Function]
+
+    Exec --> Data[Market Data]
+    Exec --> Signals
+
+    Signals --> Chart[Price + Entry/Exit Chart]
+    Signals --> Stats[Trade Metrics]
+```
+
+---
+
+## 🔍 DSL Execution Internals
+
+This is great for **technical reviewers**.
+
+```mermaid
+flowchart TD
+    DSL[TradeLang DSL] --> Grammar[Lark Grammar]
+    Grammar --> Tree[Parse Tree]
+    Tree --> AST[Normalized AST]
+    AST --> Eval[Expression Builder]
+    Eval --> Python[Python Boolean Expressions]
+    Python --> Pandas[Pandas Evaluation]
+```
+
+---
+
 
 ## 📂 Project Structure
 
@@ -170,20 +222,6 @@ This mirrors how **real-world DSLs and rule engines** are built.
 * Multi-asset support
 * Strategy validation & diagnostics
 * Deployment on Streamlit Cloud
-
----
-
-## 🎯 Why This Project Matters
-
-This project showcases:
-
-* NLP + compiler concepts
-* DSL grammar design (Lark / LALR)
-* AST-based execution
-* Product-oriented UX design
-* End-to-end system thinking
-
-It goes **well beyond a typical take-home assignment**.
 
 ---
 
