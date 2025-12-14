@@ -9,11 +9,11 @@ from ast_python import generate_signal_function
 from backtest import simple_backtest
 
 st.set_page_config(
-    page_title="TradeLang — Strategy Tester",
+    page_title="TradeLang Strategy Tester",
     layout="wide"
 )
 
-st.title("📈 TradeLang — Natural Language Trading Strategy Tester")
+st.title("📈 TradeLang Natural Language Trading Strategy Tester")
 
 st.markdown("""
 TradeLang lets you write trading strategies in **plain English**
