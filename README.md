@@ -1,5 +1,3 @@
----
-
 # TradeLang 🚀
 
 **Natural Language → DSL → Executable Trading Strategies**
