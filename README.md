@@ -24,7 +24,6 @@ This project demonstrates **NLP, language design, parsing, and execution pipelin
 
 ## 🏗️ High-Level System Architecture
 
-Add this section under **System Architecture** in your README.
 
 ```mermaid
 flowchart TD
@@ -44,10 +43,9 @@ flowchart TD
 
 ## 🧠 Compiler-Style Pipeline (Detailed)
 
-This diagram shows that TradeLang is **not just NLP**, but a **real language system**.
 
 ```mermaid
-flowchart LR
+flowchart TD
     NL[User Input<br/>Plain English] --> DSL[Domain Specific Language]
     DSL --> Parser[Grammar Parser]
     Parser --> AST[AST Nodes]
@@ -60,7 +58,6 @@ flowchart LR
 
 ## 🖥️ Streamlit UI Architecture
 
-Add this under a new section: **Streamlit Interface Architecture**
 
 ```mermaid
 flowchart TD
@@ -83,7 +80,6 @@ flowchart TD
 
 ## 🔍 DSL Execution Internals
 
-This is great for **technical reviewers**.
 
 ```mermaid
 flowchart TD
