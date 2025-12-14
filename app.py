@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 from nl_dsl import nl_to_dsl
 from dsl_parser import parse_dsl
@@ -90,6 +91,24 @@ def load_sample_data():
 
 df = load_sample_data()
 
+def plot_price_signals(df, signals):
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.plot(df.index, df["close"], label="Close Price")
+
+    entry_points = df[signals["entry"]]
+    exit_points = df[signals["exit"]]
+
+    ax.scatter(entry_points.index, entry_points["close"], marker="^", s=80, label="Entry")
+    ax.scatter(exit_points.index, exit_points["close"], marker="v", s=80, label="Exit")
+
+    ax.set_title("Price with Entry / Exit Signals")
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Price")
+    ax.legend()
+    ax.grid(True)
+
+    return fig
+
 if run_btn:
     if not nl_input.strip():
         st.warning("⚠️ Please enter a strategy or select an example.")
@@ -130,9 +149,9 @@ if run_btn:
             st.json(result)
 
         with col2:
-            st.subheader("📈 Signals Preview")
-            preview = pd.concat([df, signals], axis=1)
-            st.dataframe(preview.tail(15), use_container_width=True)
+            st.subheader("📈 Price Chart with Signals")
+            fig = plot_price_signals(df, signals)
+            st.pyplot(fig)
 
             st.subheader("🔢 Signal Counts")
             st.write({
